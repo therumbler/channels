@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>HDHomeRun</title>
+        <link href="//vjs.zencdn.net/7.3.0/video-js.min.css" rel="stylesheet">
+        <style>
+            #container {
+                margin-right: auto;
+                margin-left: auto;
+                max-width: 840px;
+            }
+            video{
+                max-width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">        
+            <h1>HDHomeRun</h1>
+            <div id="video-container">
+        </div>
+    </div>
+    <script src='https://vjs.zencdn.net/7.5.5/video.js'></script>
+    <script src="https://unpkg.com/@videojs/http-streaming@1.10.3/dist/videojs-http-streaming.min.js"></script>
+    <script>
+        function createVideoVideoJS(video_src){
+            var container = document.querySelector('#video-container')
+            container.removeChild(container.firstChild);
+            var elementId = 'video-js-video';
+            var video = document.createElement('video-js');
+            video.setAttribute('id', elementId);
+            video.setAttribute('controls', '');
+            video.setAttribute('preload', 'none');
+            video.setAttribute('data-setup', '{"fluid": true}');
+            video.setAttribute('class', 'vjs-default-skin video-js');
+            video.addEventListener('error', function(ev){
+                console.log(ev.target.error.code, video.error.message);
+            });
+            var source = document.createElement('source');
+            source.setAttribute('src', video_src);
+            video.appendChild(source);
+            
+            container.appendChild(video);
+            var player = videojs(elementId);
+            player.play();
+        }
+        function createVideoHTML5(source){
+            var video = document.createElement('video');
+            video.setAttribute('src', source);
+            video.setAttribute('controls', '');
+            document.querySelector('#video-container').appendChild(video);
+            video.addEventListener('error', function(evt){
+                console.error(evt.target.error);
+                createVideoVideoJS(source);
+            });
+        }
+
+        createVideoHTML5('http://localhost:8000/live/stream.m3u8')
+    </script>
+    </body>
+</html>

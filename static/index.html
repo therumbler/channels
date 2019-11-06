@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HDHomeRun</title>
+    </head>
+    <body>
+        <h1>HDHomeRun</h1>
+        <script>
+        var ws = new WebSocket('ws://localhost:9090/ws');
+        ws.onmessage = function(evt){
+            console.log('got message', evt.data);
+        }
+
+        
+        </script>
+    </body>
+</html>

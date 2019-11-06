@@ -1,0 +1,5 @@
+.mypy_cache
+.vscode
+.pyc
+live/
+.DS_Store
