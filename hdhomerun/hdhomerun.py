@@ -51,10 +51,10 @@ class HDHomeRun:
         self.streams.clear()
 
 
-def check_tuner_status(session, tuner="tuner0"):
-    url = f"http://10.0.1.2/tuners.html?page={tuner}"
+def check_tuner_status(session, host, tuner="tuner0"):
+    url = f"{host}/tuners.html?page={tuner}"
     # url = f"http://10.0.1.2/tuners.html?page={tuner}"
-
+    logger.debug('about to load %s', url)
     resp = session.get(url)
     rows = resp.html.find("table > tr")
 

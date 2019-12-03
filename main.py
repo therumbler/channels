@@ -9,10 +9,11 @@ from requests_html import HTMLSession
 
 logger = logging.getLogger(__name__)
 
+HOME_RUN_HOST = "http://10.0.1.26"
 
 async def main_async():
     setup_logging(level=logging.DEBUG)
-    hdhomerun = HDHomeRun("http://192.168.1.15/")
+    hdhomerun = HDHomeRun(HOME_RUN_HOST)
     try:
         hdhomerun.start_stream("9.1")
     except KeyboardInterrupt:
@@ -34,12 +35,12 @@ def main():
     # print(channel)
 
     # return
-
+    setup_logging(level=logging.DEBUG)
     session = HTMLSession()
     virtual_channel = None
     signal_quality = None
     while True:
-        status = check_tuner_status(session)
+        status = check_tuner_status(session, host=HOME_RUN_HOST)
         if virtual_channel != status["Virtual Channel"]:
             virtual_channel = status["Virtual Channel"]
             subprocess.call(["say", "channel", status["Virtual Channel"]])
