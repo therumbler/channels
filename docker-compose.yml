@@ -1,0 +1,21 @@
+version: "3.9" 
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "9091:80"
+    volumes:
+      - ./static:/usr/share/nginx/html
+    networks:
+        - hdhomerun
+  api:
+    build: .
+    volumes:
+      - ./static/live:/live
+    ports:
+      - "9092:8080"
+  
+    networks:
+      - hdhomerun
+networks:
+  hdhomerun:

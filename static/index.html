@@ -1,15 +1,32 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>HDHomeRun</title>
+        <script>window.HELP_IMPROVE_VIDEOJS = false;</script>
+        <script src="//vjs.zencdn.net/7.10.2/video.min.js"></script>
+        <link href="//vjs.zencdn.net/7.10.2/video-js.min.css" rel="stylesheet">
+        <style>
+            #main{
+                max-width: 900px;
+                margin-right:auto;
+                margin-left: auto;
+            }
+            video {max-width: 100%;}
+        </style>
     </head>
     <body>
+        <div id="main">
         <h1>HDHomeRun</h1>
+        <video class="video-js" data-setup='{"fluid": true}' controls>
+            <source  src="./live/stream.m3u8" ></source>
+        </video>
+    </div>
         <script>
-        var ws = new WebSocket('ws://localhost:9090/ws');
-        ws.onmessage = function(evt){
-            console.log('got message', evt.data);
-        }
+        // var ws = new WebSocket('ws://localhost:9090/ws');
+        // ws.onmessage = function(evt){
+        //     console.log('got message', evt.data);
+        // }
 
         
         </script>
