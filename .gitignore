@@ -3,3 +3,4 @@
 .pyc
 live/
 .DS_Store
+.htpasswd
