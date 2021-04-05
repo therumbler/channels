@@ -1,10 +1,11 @@
 #!/bin/sh
-echo "removing files ..."
-rm /live/*.ts
-rm /live/*.m3u8
 
+
+#INPUT="http://192.168.1.15:5004/auto/v9.1?transcode=mobile"
+#INPUT="http://10.0.1.2:5004/auto/v7.1?transcode=mobile"
+INPUT=$1
 ffmpeg  \
-    -i http://10.0.1.238:5004/auto/v29.1?transcode=mobile \
+    -i INPUT \
     -acodec aac \
     -ac 2 \
     -vcodec libx264 \
