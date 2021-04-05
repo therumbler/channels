@@ -1,16 +1,19 @@
 import asyncio
+import os
 import logging
 import subprocess
 import time
 
 from hdhomerun import HDHomeRun, check_tuner_status
 from hdhomerun.utilities import setup_logging
-from requests_html import HTMLSession
+# from requests_html import HTMLSession
+from web import make_app
+
 
 logger = logging.getLogger(__name__)
 
-HOME_RUN_HOST = "http://10.0.1.26"
-
+HOME_RUN_HOST = os.environ["HOME_RUN_HOST"]
+app = make_app(HOME_RUN_HOST)
 async def main_async():
     setup_logging(level=logging.DEBUG)
     hdhomerun = HDHomeRun(HOME_RUN_HOST)
