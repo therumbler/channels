@@ -1,7 +1,7 @@
 (function(){
     const $ = document.querySelector.bind(document);
 
-    async function fetchVideo(channel){
+    async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `)
         let r = await fetch(`./api/streams/${channel}`)
         let resp = await r.json();
@@ -9,7 +9,13 @@
         window.localStorage.setItem("channel", channel)
         return resp;
     }
-    function createVideoElement(videoObj){
+
+    async function fetchLineup() {
+        let r = await fetch("./api/lineup")
+        return await r.json();
+    }
+
+    function createVideoElement(videoObj) {
         console.log('createVideoElement')
         let element = document.createElement('video');
         // element.setAttribute('poster', videoObj.image);
@@ -23,8 +29,7 @@
         return element;
     }
 
-    function createVideo(videoObj){
-        
+    function createVideo(videoObj) {
         let element = document.createElement('div')
         let h2 = document.createElement('h2')
         h2.innerText = videoObj.title;
@@ -44,7 +49,9 @@
     }
 
     async function startStream(channel){
+        $("#message").innerText = "loading...";
         let videoObj = await fetchVideo(channel);
+        $("#message").innerText = "";
         renderVideo(videoObj);
     }
 
@@ -68,18 +75,39 @@
         }
     }
 
-    async function init (){
-        window.localStorage.setItem('channel', 'fake')
+    function renderChannel(channel){
+        let div = document.createElement('div');
+        let anchor = document.createElement('a');
+        anchor.setAttribute('href', `./?channel=${channel.GuideNumber}`);
+
+        let h2 = document.createElement('h2');
+        anchor.appendChild(h2);
+        h2.innerText = channel.GuideName;
+        div.appendChild(anchor);
+        $('#channels').appendChild(div);
+    }
+    function renderLineup(lineup) {
+        console.log('renderLineup');
+        Array.prototype.forEach.call(lineup, function(channel, i){
+            // console.log(channel);
+            renderChannel(channel);
+        });
+    }
+    async function displayLineup() {
+        let lineup = await fetchLineup();
+        renderLineup(lineup);
+    }
+    async function init() {
         window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
         const channel = urlParams.get('channel');
 
-        if(channel){
+        if(channel) {
             startStream(channel);
         } else {
+            await displayLineup();
             console.error("no channel id passed in")
-      }
-        // startStream('11775043598')
+        }
     }
     init();
 })();

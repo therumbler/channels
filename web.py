@@ -30,18 +30,22 @@ async def websocket_handler(req):
     logger.error("websocket disconnocected")
 
 def make_app(home_run_host):
-    app = FastAPI()
+    app = FastAPI(
+        title="HDHomeRun Web",
+        description="Benji's custom HDHomeRun web app")
     hdhr = HDHomeRun(home_run_host)
    
     @app.get("/")
     async def index():
         return 'hi'
-        
+    
+    @app.get("/lineup")
+    async def get_lineup():
+        return hdhr.lineup
+
     @app.get("/streams/{channel_id}")
     async def start_stream(channel_id):
-        stream_url = await hdhr.start_stream(channel_id)
-
-        return {"stream_url": stream_url, "title": channel_id}
+        return await hdhr.start_stream(channel_id)
 
   
     @app.delete("/streams/{channel_id}")

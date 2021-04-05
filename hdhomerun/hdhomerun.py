@@ -17,7 +17,6 @@ class HDHomeRun:
         self.base_url = base_url
         self.http_client = httpx.AsyncClient()
         self.lineup = self._get_lineup()
-        print('lineup:', self.lineup)
         self.streams = {}
         
     def _get_lineup(self):
@@ -34,6 +33,7 @@ class HDHomeRun:
 
     async def start_stream(self, guide_number):
         logger.info("start_stream...")
+    
         if len(self.streams.keys()) == 2:
             raise OverflowError("too many streams are running")
 
@@ -53,7 +53,7 @@ class HDHomeRun:
         logger.info("stream created")
         await asyncio.sleep(15)
         # await stream
-        return stream_url
+        return {"stream_url":stream_url, "title": channel["GuideName"]}
 
     async def stop_stream(self, channel_id):
         if channel_id not in self.streams:
@@ -61,7 +61,7 @@ class HDHomeRun:
             return
         logger.info('stopping channel %r...', self.streams[channel_id])
         self.streams[channel_id].cancel()
-        # self.streams.pop(channel_id, None)
+        self.streams.pop(channel_id, None)
         
     def stop_streams(self):
         for s in self.streams:
