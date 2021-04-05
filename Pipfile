@@ -1,18 +1,14 @@
 [[source]]
-name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
-
-[dev-packages]
-black = "*"
-mypy = "*"
+name = "pypi"
 
 [packages]
-requests-html = "*"
-aiohttp = "*"
+fastapi = "*"
+httpx = "*"
+uvicorn = "*"
+
+[dev-packages]
 
 [requires]
-python_version = "3.7"
-
-[pipenv]
-allow_prereleases = true
+python_version = "3.8"

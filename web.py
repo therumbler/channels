@@ -1,6 +1,8 @@
 import logging
+from hdhomerun import HDHomeRun
+# from aiohttp import web, ClientSession
+from fastapi import FastAPI
 
-from aiohttp import web, ClientSession
 
 logger = logging.getLogger(__name__)
 
@@ -27,24 +29,27 @@ async def websocket_handler(req):
             await ws.close()
     logger.error("websocket disconnocected")
 
+def make_app(home_run_host):
+    app = FastAPI()
+    hdhr = HDHomeRun(home_run_host)
+   
+    @app.get("/")
+    async def index():
+        return 'hi'
+        
+    @app.get("/streams/{channel_id}")
+    async def start_stream(channel_id):
+        stream_url = await hdhr.start_stream(channel_id)
 
-async def index_handler(req):
-    return web.HTTPFound("index.html")
+        return {"stream_url": stream_url, "title": channel_id}
 
+  
+    @app.delete("/streams/{channel_id}")
+    async def stop_stream(channel_id):
+        resp = await hdhr.stop_stream(channel_id)
+        return "stopped"
 
-def make_app():
-    app = web.Application()
-    app.add_routes(
-        [
-            web.get("/", index_handler),
-            web.get("/ws", websocket_handler),
-            web.get("/lineup.json", lineup_handler),
-        ]
-    )
-    app.router.add_static("/", "static")
     return app
-
-
 if __name__ == "__main__":
     app = make_app()
     web.run_app(app, port=9090)
