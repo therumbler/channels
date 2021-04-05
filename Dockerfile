@@ -1,11 +1,17 @@
-FROM python:3.7.4-alpine
+FROM python:3.8.7-alpine
 WORKDIR /app
 RUN mkdir /live
-RUN mkdir /app/bin
+# RUN mkdir /app/bin
+
+RUN pip3 install pipenv
 
 EXPOSE 8080
 RUN apk add ffmpeg
 
-COPY ./docker-entrypoint.sh .
+COPY Pipfile* .
+RUN pipenv sync
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+
+COPY . .
+
+ENTRYPOINT ["./scripts/docker-entrypoint.sh"]
