@@ -4,23 +4,23 @@
     const $ = document.querySelector.bind(document);
 
 
-    async function fetchVideo(videoId){
-        console.log(`fetchVideo: ${videoId} `)
-        let r = await fetch(`./api/videos/${videoId}`)
+    async function fetchVideo(channel){
+        console.log(`fetchVideo: ${channel} `)
+        let r = await fetch(`./api/channels/${channel}`)
         let resp = await r.json();
         console.log(resp);
+        window.localStorage.setItem(channel,true)
         return resp;
     }
     function createVideoElement(videoObj){
-        let video = videoObj.videos[0];
         console.log('createVideoElement')
         let element = document.createElement('video');
-        element.setAttribute('poster', videoObj.image);
+        // element.setAttribute('poster', videoObj.image);
         element.setAttribute('controls', true);
         element.setAttribute('class', "video-js");
         element.setAttribute('data-setup','{"fluid": true}');
         let source = document.createElement('source')
-        source.setAttribute('src', video.video_src);
+        source.setAttribute('src', videoObj.stream_url);
         element.appendChild(source);
 
         return element;
@@ -46,8 +46,8 @@
         videojs(element.children[1]);
     }
 
-    async function showVideo(videoId){
-        let videoObj = await fetchVideo(videoId);
+    async function showVideo(channel){
+        let videoObj = await fetchVideo(channel);
         renderVideo(videoObj);
     }
 
@@ -55,14 +55,32 @@
         let videoId = evt.target.value;
         showVideo(videoId);
     }
+    async function stopVideo(channel){
+        let r = await fetch(`./api/channels/${channel}/stop`)
+        let resp = await r.json();
+        console.log(resp);
+        window.localStorage.removeItem(channel);
+        return resp;
+    }
 
+    async function beforeUnload(evt){
+        console.error('beforeUnload')
+        let channel = localStorage.getItem("channel");
+        if(channel){
+            await stopVideo(channel)
+        }
+    }
 
     async function init (){
-        // $('#videoId').addEventListener('change',videoChange);
+        window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('video');
-        console.log(videoId);
-        showVideo(videoId);
+        const channel = urlParams.get('channel');
+        console.log(channel);
+        if(channel){
+            showVideo(channel);
+        } else {
+            console.error("no channel id passed in")
+      }
         // showVideo('11775043598')
     }
     init();

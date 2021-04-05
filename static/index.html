@@ -18,23 +18,9 @@
     </head>
     <body>
         <div id="main">
-        <h1>HDHomeRun</h1>
-        <video class="video-js" data-setup='{"fluid": true}' controls>
-            <source  src="./live/stream.m3u8" ></source>
-        </video>
-    </div>
-        <script>
-        // var ws = new WebSocket('ws://localhost:9090/ws');
-        // ws.onmessage = function(evt){
-        //     console.log('got message', evt.data);
-        // }
-
-        window.addEventListener('beforeunload', function(evt){
-            console.error('beforunload')
-            evt.preventDefault();
-            alert('hi');
-        })
-        </script>
+            <h1>HDHomeRun</h1>
+            <div id="video"></div>
+        </div>       
         <script src="./main.js"></script>
     </body>
 </html>
