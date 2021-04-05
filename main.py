@@ -2,6 +2,8 @@ import asyncio
 import os
 import logging
 import subprocess
+
+import sys
 import time
 
 from hdhomerun import HDHomeRun, check_tuner_status
@@ -11,9 +13,11 @@ from web import make_app
 
 
 logger = logging.getLogger(__name__)
+logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
 HOME_RUN_HOST = os.environ["HOME_RUN_HOST"]
 app = make_app(HOME_RUN_HOST)
+
 async def main_async():
     setup_logging(level=logging.DEBUG)
     hdhomerun = HDHomeRun(HOME_RUN_HOST)
