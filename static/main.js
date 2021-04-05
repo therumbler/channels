@@ -1,15 +1,12 @@
 (function(){
-    console.log('main.js')
-
     const $ = document.querySelector.bind(document);
-
 
     async function fetchVideo(channel){
         console.log(`fetchVideo: ${channel} `)
-        let r = await fetch(`./api/channels/${channel}`)
+        let r = await fetch(`./api/streams/${channel}`)
         let resp = await r.json();
         console.log(resp);
-        window.localStorage.setItem(channel,true)
+        window.localStorage.setItem("channel", channel)
         return resp;
     }
     function createVideoElement(videoObj){
@@ -46,20 +43,20 @@
         videojs(element.children[1]);
     }
 
-    async function showVideo(channel){
+    async function startStream(channel){
         let videoObj = await fetchVideo(channel);
         renderVideo(videoObj);
     }
 
     async function videoChange(evt){
         let videoId = evt.target.value;
-        showVideo(videoId);
+        startStream(videoId);
     }
-    async function stopVideo(channel){
-        let r = await fetch(`./api/channels/${channel}/stop`)
+    async function stopStream(channel){
+        let r = await fetch(`./api/streams/${channel}`, {'method': 'DELETE'})
         let resp = await r.json();
         console.log(resp);
-        window.localStorage.removeItem(channel);
+        window.localStorage.removeItem("channel");
         return resp;
     }
 
@@ -67,21 +64,22 @@
         console.error('beforeUnload')
         let channel = localStorage.getItem("channel");
         if(channel){
-            await stopVideo(channel)
+            await stopStream(channel)
         }
     }
 
     async function init (){
+        window.localStorage.setItem('channel', 'fake')
         window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
         const channel = urlParams.get('channel');
-        console.log(channel);
+
         if(channel){
-            showVideo(channel);
+            startStream(channel);
         } else {
             console.error("no channel id passed in")
       }
-        // showVideo('11775043598')
+        // startStream('11775043598')
     }
     init();
 })();

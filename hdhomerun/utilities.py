@@ -34,8 +34,11 @@ async def run_command(cmd, loop=None):
         stdout, stderr = await process.communicate()
     except asyncio.CancelledError:
         logger.info("got CancellerError")
-        process.kill()
-        logger.info("sent kill")
+        process.terminate()
+    
+        logger.info("sent terminate")
+        code = await process.wait()
+        logger.info("terminated with code %s", code)
         raise
     # Progress
     if process.returncode == 0:

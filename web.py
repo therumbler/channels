@@ -37,15 +37,19 @@ def make_app(home_run_host):
     async def index():
         return 'hi'
         
-    @app.get("/channels/{channel_id}")
-    async def channel(channel_id):
+    @app.get("/streams/{channel_id}")
+    async def start_stream(channel_id):
         stream_url = await hdhr.start_stream(channel_id)
 
         return {"stream_url": stream_url, "title": channel_id}
 
+  
+    @app.delete("/streams/{channel_id}")
+    async def stop_stream(channel_id):
+        resp = await hdhr.stop_stream(channel_id)
+        return "stopped"
+
     return app
-
-
 if __name__ == "__main__":
     app = make_app()
     web.run_app(app, port=9090)

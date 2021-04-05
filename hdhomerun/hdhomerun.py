@@ -51,9 +51,17 @@ class HDHomeRun:
         stream = asyncio.create_task(run_command(cmd))
         self.streams[guide_number] = stream
         logger.info("stream created")
-        await asyncio.sleep(10)
+        await asyncio.sleep(15)
         # await stream
         return stream_url
+
+    async def stop_stream(self, channel_id):
+        if channel_id not in self.streams:
+            logger.error('%s not streaming', channel_id)
+            return
+        logger.info('stopping channel %r...', self.streams[channel_id])
+        self.streams[channel_id].cancel()
+        # self.streams.pop(channel_id, None)
         
     def stop_streams(self):
         for s in self.streams:

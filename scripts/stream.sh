@@ -15,7 +15,7 @@ else
     rm $FILE_PATH/*.*
 fi
 
-ffmpeg  \
+exec ffmpeg  \
     -i $INPUT \
     -acodec aac \
     -ac 2 \
