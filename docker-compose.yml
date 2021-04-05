@@ -16,7 +16,9 @@ services:
     volumes:
       - ./static/live:/live
     ports:
-      - "9092:8080"
+      - "9092:8000"
+    environment: 
+      - HOME_RUN_HOST=http://10.0.1.238/
     networks:
       - hdhomerun
 

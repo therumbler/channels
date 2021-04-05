@@ -5,7 +5,7 @@ RUN mkdir /live
 
 RUN pip3 install pipenv
 
-EXPOSE 8080
+EXPOSE 8000
 RUN apk add ffmpeg
 
 COPY Pipfile* .
