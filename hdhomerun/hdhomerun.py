@@ -13,15 +13,25 @@ logger = logging.getLogger(__name__)
 
 
 class HDHomeRun:
-    def __init__(self, base_url):
-        self.base_url = base_url
+    def __init__(self, base_url=None):
+        if not base_url:
+            self.discover = self._discover()
+            logger.info(self.discover)
+            self.base_url = self.discover[0]["BaseURL"]
+        else:
+            self.base_url = base_url
         self.http_client = httpx.AsyncClient()
         self.lineup = self._get_lineup()
         self.streams = {}
-        
+       
+
+    def _discover(self):
+        url = "https://ipv4-api.hdhomerun.com/discover"
+        return httpx.get(url).json()
+
     def _get_lineup(self):
         # session = HTMLSession()
-        url = self.base_url + "lineup.json"
+        url = self.base_url + "/lineup.json"
         resp = httpx.get(url)
         return resp.json()
 

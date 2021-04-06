@@ -29,11 +29,11 @@ async def websocket_handler(req):
             await ws.close()
     logger.error("websocket disconnocected")
 
-def make_app(home_run_host):
+def make_app():
     app = FastAPI(
         title="HDHomeRun Web",
         description="Benji's custom HDHomeRun web app")
-    hdhr = HDHomeRun(home_run_host)
+    hdhr = HDHomeRun()
    
     @app.get("/")
     async def index():
