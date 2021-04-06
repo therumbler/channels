@@ -4,3 +4,5 @@
 live/
 .DS_Store
 .htpasswd
+cache/
+.env

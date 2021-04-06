@@ -12,7 +12,7 @@ FILE_PATH=/live/$2
 if [[ ! -e $FILE_PATH ]]; then
     mkdir $FILE_PATH 
 else
-    rm $FILE_PATH/*.*
+    rm $FILE_PATH/*.* || true
 fi
 
 exec ffmpeg  \

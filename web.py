@@ -1,19 +1,12 @@
 import logging
-from hdhomerun import HDHomeRun
-# from aiohttp import web, ClientSession
 from fastapi import FastAPI
 
+from hdhomerun import HDHomeRun
+from lib.tvmedia import TVMedia
 
 logger = logging.getLogger(__name__)
 
 clients = set()
-
-
-async def lineup_handler(req):
-    async with ClientSession() as session:
-        async with session.get("http://192.168.1.15/lineup.json") as resp:
-            lineup = await resp.json()
-            return web.json_response(lineup)
 
 
 async def websocket_handler(req):
@@ -41,7 +34,7 @@ def make_app():
     
     @app.get("/lineup")
     async def get_lineup():
-        return hdhr.lineup
+        return hdhr.get_lineup()
 
     @app.get("/streams/{channel_id}")
     async def start_stream(channel_id):

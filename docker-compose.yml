@@ -15,10 +15,13 @@ services:
     build: .
     volumes:
       - ./static/live:/live
+      - ./cache:/cache
     ports:
       - "9092:8000"
     networks:
       - hdhomerun
+    environment:
+      - TV_MEDIA_API_KEY=${TV_MEDIA_API_KEY}
 
 networks:
   hdhomerun:

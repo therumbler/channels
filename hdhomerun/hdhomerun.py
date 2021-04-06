@@ -1,17 +1,18 @@
 import asyncio
 import logging
+import os
 import subprocess
 import time
 
 import httpx
 
 from .utilities import run_command
-# from requests_html import HTMLSession
 
-
+from lib.tvmedia import TVMedia
+from lib.zap2it import Zap2It
 logger = logging.getLogger(__name__)
 
-
+TV_MEDIA_API_KEY = os.environ["TV_MEDIA_API_KEY"]
 class HDHomeRun:
     def __init__(self, base_url=None):
         if not base_url:
@@ -21,16 +22,27 @@ class HDHomeRun:
         else:
             self.base_url = base_url
         self.http_client = httpx.AsyncClient()
-        self.lineup = self._get_lineup()
+        self.lineup = self._fetch_lineup()
         self.streams = {}
-       
+        # self.tvmedia = TVMedia(TV_MEDIA_API_KEY)
+        # self.tvmedia_lineup = self.tvmedia.lineup("CA", "ON", "12123")
+        self.zap2it = Zap2It()
 
+
+    def get_lineup(self):
+        lineup = self.lineup
+        zap2it_listing = self.zap2it.grid()
+        for channel in lineup:
+            zap2it_channel = list(filter(lambda c: c["channelNo"] == channel['GuideNumber'], zap2it_listing['channels']))
+            channel['listing'] = zap2it_channel
+
+        return lineup
+        
     def _discover(self):
         url = "https://ipv4-api.hdhomerun.com/discover"
         return httpx.get(url).json()
 
-    def _get_lineup(self):
-        # session = HTMLSession()
+    def _fetch_lineup(self):
         url = self.base_url + "/lineup.json"
         resp = httpx.get(url)
         return resp.json()
@@ -39,6 +51,14 @@ class HDHomeRun:
         channel = list(filter(lambda c: c["GuideNumber"] == guide_number, self.lineup))
         if not channel:
             return None
+        # stations = self.tvmedia_lineup[0]["stations"]
+        # tv_media_channels = list(filter(lambda s:s["number"] == guide_number.replace(".","-"), stations))
+        # if tv_media_channels:
+        #     tv_media_channel = tv_media_channels[0]
+        #     logger.info("tv_media_channel %r", tv_media_channel)
+        zap2it_listing = self.zap2it.grid()
+        zap2it_channel = list(filter(lambda c: c["channelNo"] == guide_number, zap2it_listing['channels']))
+        channel[0]['listing'] = zap2it_channel
         return channel[0]
 
     async def start_stream(self, guide_number):
@@ -51,7 +71,7 @@ class HDHomeRun:
             logger.info('stream already running')
             self.streams[guide_number]["clients"] += 1
             logger.info("number of clients for channel %s is %s", guide_number, self.streams[guide_number]["clients"])
-            return {"stream_url":stream_url, "title": channel["GuideName"]}
+            return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
         
         if len(self.streams.keys()) == 2:
             raise OverflowError("too many streams are running")
@@ -69,7 +89,7 @@ class HDHomeRun:
         logger.info("stream created")
         await asyncio.sleep(15)
         # await stream
-        return {"stream_url":stream_url, "title": channel["GuideName"]}
+        return {"stream_url":stream_url, "title": channel["GuideName"],"listing": channel["listing"]}
 
     async def stop_stream(self, channel_id):
         if channel_id not in self.streams:
