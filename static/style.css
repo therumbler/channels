@@ -1,0 +1,15 @@
+body{
+    background-color: black;
+    color:darkgrey;
+    font-family:Helvetica,Arial, sans-serif;
+}
+a:visited {
+    /* color:cornflowerblue; */
+}
+#main{
+    max-width: 900px;
+    margin-right:auto;
+    margin-left: auto;
+}
+video {max-width: 100%;}
+#message {color:dimgray}
