@@ -32,24 +32,30 @@ class HDHomeRun:
         return channel[0]
 
     async def start_stream(self, guide_number):
-        logger.info("start_stream...")
-    
-        if len(self.streams.keys()) == 2:
-            raise OverflowError("too many streams are running")
-
-        stream_url = f"./live/{guide_number}/stream.m3u8"
-        if self.streams.get(guide_number):
-            logger.info('stream already running')
-            return stream_url
         channel = self._get_channel(guide_number)
         if not channel:
             raise ValueError("no channel found for guide_number %s" % guide_number)
+        
+        stream_url = f"./live/{guide_number}/stream.m3u8"
+        if self.streams.get(guide_number):
+            logger.info('stream already running')
+            self.streams[guide_number]["clients"] += 1
+            logger.info("number of clients for channel %s is %s", guide_number, self.streams[guide_number]["clients"])
+            return {"stream_url":stream_url, "title": channel["GuideName"]}
+        
+        if len(self.streams.keys()) == 2:
+            raise OverflowError("too many streams are running")
+        
+
+       
         url = channel["URL"] + "?transcode=mobile"
 
         cmd = ["./scripts/stream.sh", url, guide_number]
         # cmd = ["tail", "-f", "index.html"]
-        stream = asyncio.create_task(run_command(cmd))
-        self.streams[guide_number] = stream
+        task = asyncio.create_task(run_command(cmd))
+        self.streams[guide_number] = {}
+        self.streams[guide_number]["task"] = task
+        self.streams[guide_number]["clients"] = 1
         logger.info("stream created")
         await asyncio.sleep(15)
         # await stream
@@ -59,9 +65,11 @@ class HDHomeRun:
         if channel_id not in self.streams:
             logger.error('%s not streaming', channel_id)
             return
-        logger.info('stopping channel %r...', self.streams[channel_id])
-        self.streams[channel_id].cancel()
-        self.streams.pop(channel_id, None)
+        self.streams[channel_id]["clients"]  -= 1
+        if self.streams[channel_id]["clients"] == 0:
+            logger.info('stopping stream %r...', self.streams[channel_id])
+            self.streams[channel_id]["task"].cancel()
+            self.streams.pop(channel_id, None)
         
     def stop_streams(self):
         for s in self.streams:
