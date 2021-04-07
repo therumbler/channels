@@ -2,32 +2,33 @@
     const $ = document.querySelector.bind(document);
 
     async function fetchVideo(channel) {
-        console.log(`fetchVideo: ${channel} `)
-        let r = await fetch(`./api/streams/${channel}`)
-        try{
-        let resp = await r.json();
+        console.log(`fetchVideo: ${channel} `);
+        let r = await fetch(`./api/streams/${channel}`);
+        let resp;
+        try {
+            resp = await r.json();
         } catch {
             $("#message").innerText = "server error";
             return;
         }
         console.log(resp);
-        window.localStorage.setItem("channel", channel)
+        window.localStorage.setItem("channel", channel);
         return resp;
     }
 
     async function fetchLineup() {
-        let r = await fetch("./api/lineup")
+        let r = await fetch("./api/lineup");
         return await r.json();
     }
 
     function createVideoElement(videoObj) {
-        console.log('createVideoElement')
+        console.log('createVideoElement');
         let element = document.createElement('video');
         // element.setAttribute('poster', videoObj.image);
         element.setAttribute('controls', true);
         element.setAttribute('class', "video-js");
         element.setAttribute('data-setup', '{"fluid": true}');
-        let source = document.createElement('source')
+        let source = document.createElement('source');
         source.setAttribute('src', videoObj.stream_url);
         element.appendChild(source);
 
@@ -35,8 +36,8 @@
     }
 
     function createVideo(videoObj) {
-        let element = document.createElement('div')
-        let h2 = document.createElement('h2')
+        let element = document.createElement('div');
+        let h2 = document.createElement('h2');
         h2.innerText = videoObj.title;
         element.appendChild(h2);
         let h3 = document.createElement("h3");
@@ -48,7 +49,7 @@
 
         let videoElement = createVideoElement(videoObj);
         element.appendChild(videoElement);
-        return element
+        return element;
     }
     function renderVideo(videoObj) {
         console.log('renderVideo');
@@ -62,16 +63,17 @@
     async function startStream(channel) {
         $("#message").innerText = `loading ${channel}...`;
         let videoObj = await fetchVideo(channel);
-        $("#message").innerText = "";
         renderVideo(videoObj);
+        $("#message").innerText = "";
     }
 
     async function videoChange(evt) {
         let videoId = evt.target.value;
         startStream(videoId);
     }
+
     async function stopStream(channel) {
-        let r = await fetch(`./api/streams/${channel}`, { 'method': 'DELETE' })
+        let r = await fetch(`./api/streams/${channel}`, { 'method': 'DELETE' });
         let resp = await r.json();
         console.log(resp);
         window.localStorage.removeItem("channel");
@@ -79,10 +81,10 @@
     }
 
     async function beforeUnload(evt) {
-        console.error('beforeUnload')
+        console.error('beforeUnload');
         let channel = localStorage.getItem("channel");
         if (channel) {
-            await stopStream(channel)
+            await stopStream(channel);
         }
     }
 
@@ -91,9 +93,7 @@
         element.setAttribute("class", "item");
         let anchor = document.createElement('a');
         anchor.setAttribute('href', `./?channel=${channel.GuideNumber}`);
-
         let title = document.createElement('span');
-        // title.setAttribute("class", "item");
         title.innerText = channel.GuideName;
         let img;
         if (channel.listing.length > 0) {
@@ -103,10 +103,7 @@
             title.innerText = title.innerText + ` - (${event.program.title})`
             img = document.createElement('img');
             img.setAttribute('src', `https://zap2it.tmsimg.com/assets/${event.thumbnail}.jpg?w=400`);
-
-
         }
-        // anchor.appendChild(title);
         if (img) {
             anchor.appendChild(img);
         } else {
@@ -115,17 +112,19 @@
         element.appendChild(anchor);
         $('#channels').appendChild(element);
     }
+
     function renderLineup(lineup) {
         console.log('renderLineup');
         Array.prototype.forEach.call(lineup, function (channel, i) {
-            // console.log(channel);
             renderChannel(channel);
         });
     }
+
     async function displayLineup() {
         let lineup = await fetchLineup();
         renderLineup(lineup);
     }
+
     async function init() {
         window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
@@ -138,5 +137,6 @@
             console.error("no channel id passed in")
         }
     }
+
     init();
 })();
