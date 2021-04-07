@@ -9,19 +9,6 @@ logger = logging.getLogger(__name__)
 clients = set()
 
 
-async def websocket_handler(req):
-    logger.error("in websocket_handler")
-    ws = web.WebSocketResponse()
-    # if not ws:
-    #     logger.error("cant create websocket")
-    #     return
-    await ws.prepare(req)
-    await ws.send_json({"hi": "there"})
-    async for msg in ws:
-        if msg.data == "close":
-            await ws.close()
-    logger.error("websocket disconnocected")
-
 def make_app():
     app = FastAPI(
         title="HDHomeRun Web",
@@ -47,6 +34,3 @@ def make_app():
         return "stopped"
 
     return app
-if __name__ == "__main__":
-    app = make_app()
-    web.run_app(app, port=9090)
