@@ -4,7 +4,12 @@
     async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `)
         let r = await fetch(`./api/streams/${channel}`)
+        try{
         let resp = await r.json();
+        } catch {
+            $("#message").innerText = "server error";
+            return;
+        }
         console.log(resp);
         window.localStorage.setItem("channel", channel)
         return resp;
@@ -35,7 +40,10 @@
         h2.innerText = videoObj.title;
         element.appendChild(h2);
         let h3 = document.createElement("h3");
-        h3.innerText = videoObj.listing[0].events[0].program.title;
+        if (videoObj.listing.length > 0) {
+            h3.innerText = videoObj.listing[0].events[0].program.title;
+        }
+
         element.appendChild(h3);
 
         let videoElement = createVideoElement(videoObj);
@@ -79,19 +87,33 @@
     }
 
     function renderChannel(channel) {
-        let div = document.createElement('div');
+        let element = document.createElement('span');
+        element.setAttribute("class", "item");
         let anchor = document.createElement('a');
         anchor.setAttribute('href', `./?channel=${channel.GuideNumber}`);
 
-        let h2 = document.createElement('h2');
-        anchor.appendChild(h2);
-        h2.innerText = channel.GuideName
-
+        let title = document.createElement('span');
+        // title.setAttribute("class", "item");
+        title.innerText = channel.GuideName;
+        let img;
         if (channel.listing.length > 0) {
-            h2.innerText = h2.innerText + ` - (${channel.listing[0].events[0].program.title})`
+            let event = channel.listing[0].events[0];
+            let channelDescription = `${event.program.title} on ${channel.listing[0].affiliateName}`;
+            anchor.setAttribute("title", channelDescription)
+            title.innerText = title.innerText + ` - (${event.program.title})`
+            img = document.createElement('img');
+            img.setAttribute('src', `https://zap2it.tmsimg.com/assets/${event.thumbnail}.jpg?w=400`);
+
+
         }
-        div.appendChild(anchor);
-        $('#channels').appendChild(div);
+        // anchor.appendChild(title);
+        if (img) {
+            anchor.appendChild(img);
+        } else {
+            anchor.appendChild(title);
+        }
+        element.appendChild(anchor);
+        $('#channels').appendChild(element);
     }
     function renderLineup(lineup) {
         console.log('renderLineup');

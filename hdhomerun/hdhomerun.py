@@ -47,6 +47,11 @@ class HDHomeRun:
         resp = httpx.get(url)
         return resp.json()
 
+    def fetch_status(self):
+        url = self.base_url + "/status.json"
+        resp = httpx.get(url)
+        return resp.json()
+
     def _get_channel(self, guide_number):
         channel = list(filter(lambda c: c["GuideNumber"] == guide_number, self.lineup))
         if not channel:
@@ -65,8 +70,15 @@ class HDHomeRun:
         channel = self._get_channel(guide_number)
         if not channel:
             raise ValueError("no channel found for guide_number %s" % guide_number)
-        
+    
         stream_url = f"./live/{guide_number}/stream.m3u8"
+        status = self.fetch_status()
+        logger.info("status = %s", status)
+        if guide_number in [s.get('VctNumber') for s in status]:
+            logger.info('HDHomeRun status says stream already running')
+            self.streams[guide_number]["clients"] += 1            
+            return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
+
         if self.streams.get(guide_number):
             logger.info('stream already running')
             self.streams[guide_number]["clients"] += 1
@@ -75,8 +87,7 @@ class HDHomeRun:
         
         if len(self.streams.keys()) == 2:
             raise OverflowError("too many streams are running")
-        
-
+     
        
         url = channel["URL"] + "?transcode=mobile"
 

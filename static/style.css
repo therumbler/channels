@@ -1,15 +1,28 @@
-body{
+body {
     background-color: black;
     color:darkgrey;
-    font-family:Helvetica,Arial, sans-serif;
+    font-family: Helvetica,Arial, sans-serif;
 }
+
 a:visited {
     /* color:cornflowerblue; */
 }
-#main{
-    max-width: 900px;
+
+#main {
+    max-width: 1600px;
     margin-right:auto;
     margin-left: auto;
 }
+
 video {max-width: 100%;}
-#message {color:dimgray}
+
+#message {
+    color:dimgray;
+    font-size: 1.2em;
+}
+
+
+.item {
+    display: inline-block; 
+    background-color:#999999;
+}
