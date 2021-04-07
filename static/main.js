@@ -1,9 +1,9 @@
 (function () {
     const $ = document.querySelector.bind(document);
-
+    const BASE_URL = window.location.hostname == 'home.irumble.com'? '.' : 'https://home.irumble.com';
     async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `);
-        let r = await fetch(`./api/streams/${channel}`);
+        let r = await fetch(`${BASE_URL}/api/streams/${channel}`);
         let resp;
         try {
             resp = await r.json();
@@ -17,7 +17,7 @@
     }
 
     async function fetchLineup() {
-        let r = await fetch("./api/lineup");
+        let r = await fetch(`${BASE_URL}/api/lineup`);
         return await r.json();
     }
 
@@ -73,7 +73,7 @@
     }
 
     async function stopStream(channel) {
-        let r = await fetch(`./api/streams/${channel}`, { 'method': 'DELETE' });
+        let r = await fetch(`${BASE_URL}./api/streams/${channel}`, { 'method': 'DELETE' });
         let resp = await r.json();
         console.log(resp);
         window.localStorage.removeItem("channel");
