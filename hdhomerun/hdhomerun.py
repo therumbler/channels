@@ -27,7 +27,7 @@ class HDHomeRun:
         # self.tvmedia = TVMedia(TV_MEDIA_API_KEY)
         # self.tvmedia_lineup = self.tvmedia.lineup("CA", "ON", "12123")
         self.zap2it = Zap2It()
-
+        logger.info('HDHomeRun initialized')
 
     def get_lineup(self):
         lineup = self.lineup
@@ -56,11 +56,7 @@ class HDHomeRun:
         channel = list(filter(lambda c: c["GuideNumber"] == guide_number, self.lineup))
         if not channel:
             return None
-        # stations = self.tvmedia_lineup[0]["stations"]
-        # tv_media_channels = list(filter(lambda s:s["number"] == guide_number.replace(".","-"), stations))
-        # if tv_media_channels:
-        #     tv_media_channel = tv_media_channels[0]
-        #     logger.info("tv_media_channel %r", tv_media_channel)
+
         zap2it_listing = self.zap2it.grid()
         zap2it_channel = list(filter(lambda c: c["channelNo"] == guide_number, zap2it_listing['channels']))
         channel[0]['listing'] = zap2it_channel
@@ -85,7 +81,7 @@ class HDHomeRun:
             logger.info("number of clients for channel %s is %s", guide_number, self.streams[guide_number]["clients"])
             return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
         
-        if len(self.streams.keys()) == 2:
+        if len([s for s in status if s.get('VctNumber')]) == 2:
             raise OverflowError("too many streams are running")
      
        
