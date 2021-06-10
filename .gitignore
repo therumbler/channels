@@ -6,3 +6,5 @@ live/
 .htpasswd
 cache/
 .env
+acme.json
+traefik/letsencrypt/

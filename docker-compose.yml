@@ -9,6 +9,7 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./nginx/.htpasswd:/etc/apache2/.htpasswd
+    restart: unless-stopped
     networks:
         - hdhomerun
     labels:
@@ -24,19 +25,23 @@ services:
       - ./cache:/cache
     ports:
       - "9092:8000"
+    restart: unless-stopped
     networks:
       - hdhomerun
     environment:
       - TV_MEDIA_API_KEY=${TV_MEDIA_API_KEY}
+      - HDHOMERUN_BASE_URL=${HDHOMERUN_BASE_URL}
 
   traefik:
     image: traefik:v2.2
     ports:
       - "80:80"
       - "443:443"
+    restart: unless-stopped
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "$PWD/traefik/traefik.prod.toml:/etc/traefik/traefik.toml"
+      - ${PWD}/traefik/letsencrypt:/letsencrypt
     networks:
       - hdhomerun
 networks:

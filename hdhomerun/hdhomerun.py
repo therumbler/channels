@@ -17,7 +17,7 @@ class HDHomeRun:
     def __init__(self, base_url=None):
         if not base_url:
             self.discover = self._discover()
-            logger.info(self.discover)
+            logger.info('discover = %s', self.discover)
             self.base_url = self.discover[0]["BaseURL"]
         else:
             self.base_url = base_url
@@ -72,8 +72,10 @@ class HDHomeRun:
         logger.info("status = %s", status)
         if guide_number in [s.get('VctNumber') for s in status]:
             logger.info('HDHomeRun status says stream already running')
-            self.streams[guide_number]["clients"] += 1            
-            return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
+            #if guide_number not in self.streams:
+            #    self.streams[guide_number] = {'clients': 0}
+            #self.streams[guide_number]["clients"] += 1            
+            #return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
 
         if self.streams.get(guide_number):
             logger.info('stream already running')

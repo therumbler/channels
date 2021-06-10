@@ -1,4 +1,5 @@
 import logging
+import os
 from fastapi import FastAPI
 
 from hdhomerun import HDHomeRun
@@ -13,7 +14,7 @@ def make_app():
     app = FastAPI(
         title="HDHomeRun Web",
         description="Benji's custom HDHomeRun web app")
-    hdhr = HDHomeRun()
+    hdhr = HDHomeRun(base_url=os.getenv('HDHOMERUN_BASE_URL'))
    
     @app.get("/")
     async def index():
