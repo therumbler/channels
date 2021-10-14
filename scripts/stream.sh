@@ -1,18 +1,15 @@
 #!/bin/sh
-set -euxo pipefail
-
-#INPUT="http://192.168.1.15:5004/auto/v9.1?transcode=mobile"
-#INPUT="http://10.0.1.2:5004/auto/v7.1?transcode=mobile"
-
-
+#set -euxo pipefail
+set -eux
 
 INPUT=$1
 FILE_PATH=/live/$2
 
-if [[ ! -e $FILE_PATH ]]; then
-    mkdir $FILE_PATH 
-else
+if  test -f $FILE_PATH ; then
     rm $FILE_PATH/*.* || true
+else
+    echo "making directory $FILE_PATH"
+    mkdir $FILE_PATH 
 fi
 
 exec ffmpeg  \
