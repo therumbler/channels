@@ -70,12 +70,14 @@ class HDHomeRun:
         stream_url = f"./live/{guide_number}/stream.m3u8"
         status = self.fetch_status()
         logger.info("status = %s", status)
-        if guide_number in [s.get('VctNumber') for s in status]:
-            logger.info('HDHomeRun status says stream already running')
-            #if guide_number not in self.streams:
-            #    self.streams[guide_number] = {'clients': 0}
-            #self.streams[guide_number]["clients"] += 1            
-            #return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
+        #if guide_number in [s.get('VctNumber') for s in status]:
+        #    logger.info('HDHomeRun status says stream already running')
+        #    if guide_number not in self.streams:
+        #        logger.error('guide %s not in streams', guide_number)
+        #        self.streams[guide_number] = {'clients': 0}
+        #    self.streams[guide_number]["clients"] += 1            
+        #    logger.info('streams = %s', self.streams)
+        #    return {"stream_url":stream_url, "title": channel["GuideName"], "listing": channel["listing"]}
 
         if self.streams.get(guide_number):
             logger.info('stream already running')
@@ -96,6 +98,7 @@ class HDHomeRun:
         self.streams[guide_number]["task"] = task
         self.streams[guide_number]["clients"] = 1
         logger.info("stream created")
+        logger.info('streams = %s', self.streams)
         await asyncio.sleep(15)
         # await stream
         return {"stream_url":stream_url, "title": channel["GuideName"],"listing": channel["listing"]}
@@ -105,9 +108,13 @@ class HDHomeRun:
             logger.error('%s not streaming', channel_id)
             return
         self.streams[channel_id]["clients"]  -= 1
+        logger.info('streams = %s', self.streams)
         if self.streams[channel_id]["clients"] == 0:
             logger.info('stopping stream %r...', self.streams[channel_id])
-            self.streams[channel_id]["task"].cancel()
+            try:
+                self.streams[channel_id]["task"].cancel()
+            except KeyError:
+                logger.error('no task to cancel')
             self.streams.pop(channel_id, None)
         
     def stop_streams(self):

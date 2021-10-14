@@ -4,19 +4,24 @@
     //const BASE_URL = window.location.hostname == 'tv.freeshows.site' ? '.' : 'https://tv.freeshows.site';
     const BASE_URL = '.';
 
-    function initWebsocket(){
+    async function initWebsocket(){
         var wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
 	wsUrl = wsUrl + window.location.host + '/ws/';
         ws = new WebSocket(wsUrl); 
-	ws.onopen = function (evt) {
+	ws.onopen = async function (evt) {
 	    console.log('websocket opened');
+	    await init();
 	}
-	ws.onmessage = function(msg){
-	    console.log('msg in', msg);
+	ws.onmessage = async function(msg){
+	    videoObj = JSON.parse(msg.data);
+	    console.log('msg in', videoObj);
+            renderVideo(videoObj);
+            $("#message").innerText = "";
         }
     }
     async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `);
+        return;
         let r = await fetch(`${BASE_URL}/api/streams/${channel}`);
         let resp;
         try {
@@ -26,7 +31,6 @@
             return;
         }
         console.log(resp);
-        window.localStorage.setItem("channel", channel);
         return resp;
     }
 
@@ -75,7 +79,12 @@
     }
 
     async function startStream(channel) {
+        window.localStorage.setItem("channel", channel);
         $("#message").innerText = `loading ${channel}...`;
+
+        ws.send(JSON.stringify({'channel': channel}));
+        return;
+	
         let videoObj = await fetchVideo(channel);
         renderVideo(videoObj);
         $("#message").innerText = "";
@@ -98,7 +107,7 @@
         console.error('beforeUnload');
         let channel = localStorage.getItem("channel");
         if (channel) {
-            await stopStream(channel);
+           // await stopStream(channel);
         }
     }
 
@@ -140,18 +149,17 @@
     }
 
     async function init() {
-	initWebsocket();
         window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
         const channel = urlParams.get('channel');
 
         if (channel) {
-            startStream(channel);
+            await startStream(channel);
         } else {
             await displayLineup();
             console.error("no channel id passed in")
         }
     }
 
-    init();
+    initWebsocket();
 })();

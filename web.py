@@ -15,6 +15,13 @@ def make_app():
         title="HDHomeRun Web",
         description="Benji's custom HDHomeRun web app")
     hdhr = HDHomeRun(base_url=os.getenv('HDHOMERUN_BASE_URL'))
+
+
+    async def process_message(message):
+        """process a websocket message"""
+        if 'channel' in message:
+            return await hdhr.start_stream(message['channel'])
+        logger.error('process_message can\'t process %r', message)
    
     @app.get("/")
     async def index():
@@ -38,16 +45,23 @@ def make_app():
     async def websocket_endpoint(ws: WebSocket):
         logger.info('websocket_endpoint')
         await ws.accept()
+        channel = None
         while True:
             try:
-                data = await ws.receive_text()
-                await ws.send_text(f"Message text was: {data}")
+                data = await ws.receive_json()
+                resp = await process_message(data)
+                if resp:
+                    channel = data['channel']
+                    await ws.send_json(resp)
+
             except WebSocketDisconnect as ex:
                 logger.info('WebSocketDisconnect exception')
                 break
             except RuntimeError as ex:
                 logger.info('Websocket disconnected')
                 break
+        if channel:
+            await hdhr.stop_stream(channel)
         logger.info('websocket disconnected')
 
     return app

@@ -13,13 +13,13 @@ from web import make_app
 
 
 logger = logging.getLogger(__name__)
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
 # HOME_RUN_HOST = os.environ["HOME_RUN_HOST"]
 app = make_app()
 
 async def main_async():
-    setup_logging(level=logging.DEBUG)
+    setup_logging(level=logging.INFO)
     hdhomerun = HDHomeRun()
     try:
         hdhomerun.start_stream("9.1")

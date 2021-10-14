@@ -5,14 +5,16 @@ set -eux
 INPUT=$1
 FILE_PATH=/live/$2
 
-if  test -f $FILE_PATH ; then
+if test -f $FILE_PATH ; then
     rm $FILE_PATH/*.* || true
 else
     echo "making directory $FILE_PATH"
-    mkdir $FILE_PATH 
+    mkdir $FILE_PATH || true 
 fi
 
 exec ffmpeg  \
+    -hide_banner \
+    -loglevel error \
     -i $INPUT \
     -acodec aac \
     -ac 2 \
