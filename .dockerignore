@@ -4,3 +4,4 @@
 cache/
 .vscode
 static/live/
+traefik/
