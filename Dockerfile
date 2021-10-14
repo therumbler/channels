@@ -1,4 +1,11 @@
-FROM python:3.8.7-alpine
+FROM python:3.8.12-slim
+RUN apt update 
+RUN apt install -y gcc build-essential
+#RUN rm -rf /var/lib/apt/lists/* \
+#    && pip install cryptography \
+#    && apt purge -y --auto-remove gcc build-essential
+RUN apt install -y ffmpeg
+
 WORKDIR /app
 RUN mkdir /live
 # RUN mkdir /app/bin
@@ -6,11 +13,9 @@ RUN mkdir /live
 RUN pip3 install pipenv
 
 EXPOSE 8000
-RUN apk add ffmpeg
 
-COPY Pipfile* .
+COPY Pipfile* ./
 RUN pipenv sync
-
 
 COPY . .
 

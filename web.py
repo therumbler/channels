@@ -1,6 +1,7 @@
 import logging
 import os
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket
+from starlette.websockets import WebSocketDisconnect
 
 from hdhomerun import HDHomeRun
 from lib.tvmedia import TVMedia
@@ -8,7 +9,6 @@ from lib.tvmedia import TVMedia
 logger = logging.getLogger(__name__)
 
 clients = set()
-
 
 def make_app():
     app = FastAPI(
@@ -34,4 +34,21 @@ def make_app():
         resp = await hdhr.stop_stream(channel_id)
         return "stopped"
 
+    @app.websocket("/ws/")
+    async def websocket_endpoint(ws: WebSocket):
+        logger.info('websocket_endpoint')
+        await ws.accept()
+        while True:
+            try:
+                data = await ws.receive_text()
+                await ws.send_text(f"Message text was: {data}")
+            except WebSocketDisconnect as ex:
+                logger.info('WebSocketDisconnect exception')
+                break
+            except RuntimeError as ex:
+                logger.info('Websocket disconnected')
+                break
+        logger.info('websocket disconnected')
+
     return app
+

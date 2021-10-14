@@ -1,6 +1,20 @@
 (function () {
+    let ws = null;
     const $ = document.querySelector.bind(document);
-    const BASE_URL = window.location.hostname == 'tv.freeshows.site' ? '.' : 'https://tv.freeshows.site';
+    //const BASE_URL = window.location.hostname == 'tv.freeshows.site' ? '.' : 'https://tv.freeshows.site';
+    const BASE_URL = '.';
+
+    function initWebsocket(){
+        var wsUrl = window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+	wsUrl = wsUrl + window.location.host + '/ws/';
+        ws = new WebSocket(wsUrl); 
+	ws.onopen = function (evt) {
+	    console.log('websocket opened');
+	}
+	ws.onmessage = function(msg){
+	    console.log('msg in', msg);
+        }
+    }
     async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `);
         let r = await fetch(`${BASE_URL}/api/streams/${channel}`);
@@ -126,6 +140,8 @@
     }
 
     async function init() {
+	initWebsocket();
+	return
         window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
         const channel = urlParams.get('channel');
