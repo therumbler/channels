@@ -141,7 +141,6 @@
 
     async function init() {
 	initWebsocket();
-	return
         window.addEventListener('beforeunload', beforeUnload);
         const urlParams = new URLSearchParams(window.location.search);
         const channel = urlParams.get('channel');
