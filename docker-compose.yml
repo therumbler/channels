@@ -1,3 +1,4 @@
+---
 version: "3.9" 
 services:
   nginx:
@@ -44,6 +45,9 @@ services:
       - ${PWD}/traefik/letsencrypt:/letsencrypt
     networks:
       - hdhomerun
+    user: "${UID}:${GID}"
+
 networks:
   hdhomerun:
+    name: hdhomerun
   

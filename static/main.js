@@ -1,6 +1,6 @@
 (function () {
     const $ = document.querySelector.bind(document);
-    const BASE_URL = window.location.hostname == 'stream.irumble.com'? '.' : 'https://stream.irumble.com';
+    const BASE_URL = window.location.hostname == 'tv.freeshows.site' ? '.' : 'https://tv.freeshows.site';
     async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `);
         let r = await fetch(`${BASE_URL}/api/streams/${channel}`);
