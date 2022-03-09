@@ -61,8 +61,10 @@ def make_app():
                 logger.info('Websocket disconnected')
                 break
         if channel:
+            logger.info('stopping channel...')
             await hdhr.stop_stream(channel)
         logger.info('websocket disconnected')
+        return ws
 
     return app
 
