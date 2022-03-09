@@ -18,6 +18,13 @@
             renderVideo(videoObj);
             $("#message").innerText = "";
         }
+	ws.onerror = async function(evt){
+	    $("#message").innerText  = 'WebSocket error';
+	    console.error(evt);
+	}
+	ws.onclose = async function(evt) {
+	    $("message").innerText = "WebSocket closed";
+	}
     }
     async function fetchVideo(channel) {
         console.log(`fetchVideo: ${channel} `);
@@ -75,7 +82,15 @@
         let element = createVideo(videoObj);
 
         $('#video').appendChild(element);
-        videojs($("video"));
+	techOrder: [ 'chromecast', 'html5' ]
+	var options = {
+            controls: true,
+            techOrder: [ 'chromecast', 'html5' ],
+            plugins: {
+                chromecast: {}
+            }
+        };
+        videojs($("video"), options);
     }
 
     async function startStream(channel) {
