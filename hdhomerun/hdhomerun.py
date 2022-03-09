@@ -99,7 +99,7 @@ class HDHomeRun:
         self.streams[guide_number]["clients"] = 1
         logger.info("stream created")
         logger.info('streams = %s', self.streams)
-        await asyncio.sleep(15)
+        await asyncio.sleep(5)
         # await stream
         return {"stream_url":stream_url, "title": channel["GuideName"],"listing": channel["listing"]}
 
