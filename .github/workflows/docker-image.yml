@@ -4,9 +4,7 @@ on:
   push:
   
 jobs:
-
   buildx:
-
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
