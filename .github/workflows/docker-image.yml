@@ -16,5 +16,5 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v2
         with:
-          tags: therumbler/channels:${GITHUB_SHA}
+          tags: "therumbler/channels:$GITHUB_SHA"
       
