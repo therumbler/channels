@@ -9,7 +9,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      GITHUB_SHA: $GITHUB_SHA
+      GITHUB_SHA: ${GITHUB_SHA}
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
